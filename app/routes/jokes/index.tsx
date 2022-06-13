@@ -1,3 +1,5 @@
+import type { LinksFunction } from '@remix-run/node';
+
 export default function Jokes() {
   return (
     <div>
