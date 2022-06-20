@@ -1,3 +1,15 @@
+import { redirect } from "@remix-run/node";
+
+
+export async function action({request}: any) {
+  const body = await request.formData();
+  const inputName = body.get('name');
+  const inputContent = body.get('content');
+  console.log(inputName, inputContent);
+  return redirect('/jokes')
+}
+
+
 export default function NewJokeRoute() {
   return (
     <div>
