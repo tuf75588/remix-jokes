@@ -1,6 +1,33 @@
-import { redirect } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { db } from '~/utils/db.server';
 import type { ActionFunction } from '@remix-run/node';
+
+function validateName(name: string) {
+  if (name.length < 3) {
+    return 'That name is too short.';
+  }
+}
+
+function validateContent(content: string) {
+  if (content.length < 10) {
+    return 'That joke is too short.';
+  }
+}
+
+type ActionData = {
+  formError?: string;
+  fieldErrors?: {
+    name: string | undefined;
+    content: string | undefined;
+  };
+  fields?: {
+    name: string;
+    content: string;
+  };
+};
+const badRequest = (data: ActionData) => {
+  return json(data, { status: 400 });
+};
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
@@ -8,10 +35,17 @@ export const action: ActionFunction = async ({ request }) => {
   const content = form.get('content');
 
   if (typeof name !== 'string' || typeof content !== 'string') {
-    throw new Error('Something went wrong.  Form not submitted correctly');
+    return badRequest({ formError: 'Form not submitted correctly' });
   }
+  const fieldErrors = {
+    name: validateName(name),
+    content: validateContent(content),
+  };
   const fields = { name, content };
 
+  if (Object.values(fieldErrors).some(Boolean)) {
+    return badRequest({ fieldErrors, fields });
+  }
   const joke = await db.joke.create({ data: fields });
   return redirect(`/jokes/${joke.id}`);
 };
