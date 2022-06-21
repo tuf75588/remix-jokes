@@ -1,6 +1,7 @@
 import { json, redirect } from '@remix-run/node';
 import { db } from '~/utils/db.server';
 import type { ActionFunction } from '@remix-run/node';
+import { useActionData } from '@remix-run/react';
 
 function validateName(name: string) {
   if (name.length < 3) {
@@ -43,6 +44,7 @@ export const action: ActionFunction = async ({ request }) => {
   };
   const fields = { name, content };
 
+  // we return true is a string is returned, since it corresponds to a parameter not meeting some criteria
   if (Object.values(fieldErrors).some(Boolean)) {
     return badRequest({ fieldErrors, fields });
   }
@@ -51,21 +53,61 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function NewJokeRoute() {
+  const actionData = useActionData<ActionData>();
+  console.log(actionData);
   return (
     <div>
       <p>Add your own hilarious joke</p>
       <form method='post'>
         <div>
           <label>
-            Name: <input type='text' name='name' />
+            Name:{' '}
+            <input
+              type='text'
+              defaultValue={actionData?.fields?.name}
+              name='name'
+              aria-invalid={Boolean(actionData?.fieldErrors?.name) || undefined}
+              aria-errormessage={
+                actionData?.fieldErrors?.name ? 'name-error' : undefined
+              }
+            />
           </label>
+          {actionData?.fieldErrors?.name ? (
+            <p className='form-validation-error' role='alert' id='name-error'>
+              {actionData.fieldErrors.name}
+            </p>
+          ) : null}
         </div>
         <div>
           <label>
-            Content: <textarea name='content' />
+            Content:{' '}
+            <textarea
+              name='content'
+              defaultValue={actionData?.fields?.content}
+              aria-invalid={
+                Boolean(actionData?.fieldErrors?.content) || undefined
+              }
+              aria-errormessage={
+                actionData?.fieldErrors?.content ? 'content-error' : undefined
+              }
+            />
           </label>
+          {actionData?.fieldErrors?.content ? (
+            <p
+              className='form-validation-error'
+              role='alert'
+              id='content-error'
+            >
+              {actionData.fieldErrors.content}
+            </p>
+          ) : null}
         </div>
         <div>
+          {actionData?.formError ? (
+            <p className='form-validation-error' role='alert'>
+              {actionData.formError}
+            </p>
+          ) : null}
           <button type='submit' className='button'>
             Add
           </button>
