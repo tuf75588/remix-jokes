@@ -1,6 +1,11 @@
-import type { LinksFunction, ActionFunction } from '@remix-run/node';
+import { LinksFunction, ActionFunction, json } from '@remix-run/node';
 import stylesUrl from '~/styles/login.css';
 import { Link, useSearchParams } from '@remix-run/react';
+
+
+export const links: LinksFunction = () => {
+  return [{ href: stylesUrl, rel: 'stylesheet' }];
+};
 
 function validateUsername(username: unknown) {
   if (typeof username !== 'string' || username.length < 3) {
@@ -14,9 +19,31 @@ function validatePassword(password: unknown) {
   }
 }
 
-export const links: LinksFunction = () => {
-  return [{ href: stylesUrl, rel: 'stylesheet' }];
+function validateUrl(url: any) {
+  console.log(url);
+  let urls = ['/jokes', '/', 'https://remix.run'];
+  if (urls.includes(url)) {
+    return url;
+  }
+  return '/jokes';
+}
+
+type ActionData = {
+  formError?: string;
+  fieldErrors?: {
+    username: string | undefined;
+    password: string | undefined;
+  };
+  fields?: {
+    loginType: string;
+    username: string;
+    password: string;
+  };
 };
+
+const badRequest = (data: ActionData) => {
+  return json(data, {status: 400});
+}
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
