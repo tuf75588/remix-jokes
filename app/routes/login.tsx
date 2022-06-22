@@ -1,7 +1,9 @@
-import { LinksFunction, ActionFunction, json } from '@remix-run/node';
+import { json } from '@remix-run/node';
 import stylesUrl from '~/styles/login.css';
 import { Link, useActionData, useSearchParams } from '@remix-run/react';
 import { db } from '~/utils/db.server';
+import type { LinksFunction, ActionFunction } from '@remix-run/node';
+import { login } from '~/session.server';
 
 export const links: LinksFunction = () => {
   return [{ href: stylesUrl, rel: 'stylesheet' }];
@@ -73,7 +75,14 @@ export const action: ActionFunction = async ({ request }) => {
 
   switch (loginType) {
     case 'login': {
-      return badRequest({ fields, formError: 'Not Implemented' });
+      const user = await login({ username, password });
+      console.log({ user });
+      if (!user) {
+        return badRequest({
+          fields,
+          formError: 'Username/Password combination is incorrect',
+        });
+      }
     }
     case 'register': {
       const userExists = await db.user.findFirst({
@@ -82,7 +91,7 @@ export const action: ActionFunction = async ({ request }) => {
       if (userExists) {
         return badRequest({
           fields,
-          formError: `User with ${username} already exists`,
+          formError: `User with username ${username} already exists`,
         });
       }
       /* create user */
