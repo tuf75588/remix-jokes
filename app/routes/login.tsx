@@ -3,7 +3,7 @@ import stylesUrl from '~/styles/login.css';
 import { Link, useActionData, useSearchParams } from '@remix-run/react';
 import { db } from '~/utils/db.server';
 import type { LinksFunction, ActionFunction } from '@remix-run/node';
-import { login } from '~/session.server';
+import { createUserSession, login } from '~/session.server';
 
 export const links: LinksFunction = () => {
   return [{ href: stylesUrl, rel: 'stylesheet' }];
@@ -83,6 +83,8 @@ export const action: ActionFunction = async ({ request }) => {
           formError: 'Username/Password combination is incorrect',
         });
       }
+      return createUserSession(user.id, redirectTo);
+
     }
     case 'register': {
       const userExists = await db.user.findFirst({
