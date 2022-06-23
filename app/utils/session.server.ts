@@ -37,16 +37,14 @@ const storage = createCookieSessionStorage({
   },
 });
 
-export async function getUserSession(request: Request) {
+function getUserSession(request: Request) {
   return storage.getSession(request.headers.get('Cookie'));
 }
 
 export async function getUserId(request: Request) {
   const session = await getUserSession(request);
   const userId = session.get('userId');
-  if (!userId || typeof userId !== 'string') {
-    return null;
-  }
+  if (!userId || typeof userId !== 'string') return null;
   return userId;
 }
 
@@ -58,7 +56,7 @@ export async function requireUserId(
   const userId = session.get('userId');
   if (!userId || typeof userId !== 'string') {
     const searchParams = new URLSearchParams([['redirectTo', redirectTo]]);
-    throw redirect(`/login/${searchParams}`);
+    throw redirect(`/login?${searchParams}`);
   }
   return userId;
 }
