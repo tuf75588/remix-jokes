@@ -3,7 +3,7 @@ import stylesUrl from '~/styles/login.css';
 import { Link, useActionData, useSearchParams } from '@remix-run/react';
 import { db } from '~/utils/db.server';
 import type { LinksFunction, ActionFunction } from '@remix-run/node';
-import { createUserSession, login } from '~/utils/session.server';
+import { createUserSession, login, register } from '~/utils/session.server';
 
 export const links: LinksFunction = () => {
   return [{ href: stylesUrl, rel: 'stylesheet' }];
@@ -84,7 +84,6 @@ export const action: ActionFunction = async ({ request }) => {
         });
       }
       return createUserSession(user.id, redirectTo);
-
     }
     case 'register': {
       const userExists = await db.user.findFirst({
@@ -97,10 +96,14 @@ export const action: ActionFunction = async ({ request }) => {
         });
       }
       /* create user */
-      return badRequest({
-        fields,
-        formError: 'Not implemented',
-      });
+      const user = await register({ username, password });
+      if (!user) {
+        return badRequest({
+          fields,
+          formError: `Something went wrong trying to create a new user.`,
+        });
+      }
+      return createUserSession(user.id, redirectTo);
     }
     default: {
       return badRequest({
