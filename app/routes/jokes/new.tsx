@@ -29,7 +29,13 @@ type ActionData = {
   };
 };
 
-
+export function ErrorBoundary() {
+  return (
+    <div className="error-container">
+      Something unexpected went wrong. Sorry about that.
+    </div>
+  );
+}
 
 const badRequest = (data: ActionData) => json(data, { status: 400 });
 

@@ -47,6 +47,15 @@ const badRequest = (data: ActionData) => {
   return json(data, { status: 400 });
 };
 
+
+export function ErrorBoundary() {
+  return (
+    <div className="error-container">
+      Something unexpected went wrong. Sorry about that.
+    </div>
+  );
+}
+
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
   const loginType = form.get('loginType');
@@ -106,6 +115,7 @@ export const action: ActionFunction = async ({ request }) => {
       return createUserSession(user.id, redirectTo);
     }
     default: {
+
       return badRequest({
         fields,
         formError: 'Login type invalid',
@@ -113,6 +123,7 @@ export const action: ActionFunction = async ({ request }) => {
     }
   }
 };
+
 
 export default function Login() {
   const actionData = useActionData<ActionData>();

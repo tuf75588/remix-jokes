@@ -8,6 +8,14 @@ type LoaderData = {
   randomJoke: Joke;
 };
 
+export function ErrorBoundary() {
+  return (
+    <div className="error-container">
+      I did a whoopsies.
+    </div>
+  );
+}
+
 export const loader: LoaderFunction = async () => {
   const count = await db.joke.count();
   const randomNumber = Math.floor(Math.random() * count);
