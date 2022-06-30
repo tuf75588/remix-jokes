@@ -1,5 +1,5 @@
-import { LoaderFunction, ActionFunction, redirect } from '@remix-run/node';
-import { json } from '@remix-run/node';
+import type { LoaderFunction, ActionFunction } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { useLoaderData, Link, useParams, useCatch } from '@remix-run/react';
 import { db } from '~/utils/db.server';
 import type { Joke } from '@prisma/client';
