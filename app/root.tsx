@@ -30,7 +30,7 @@ export const meta: MetaFunction = () => {
     charSet: 'utf-8',
     description,
     keywords: 'Remix,jokes',
-    'twitter:image': 'https://remix-jokes/lol/social.png',
+    'twitter:image': 'https://remix-jokes.lol/social.png',
     'twitter:card': 'summary_large_image',
     'twitter:creator': '@remix_run',
     'twitter:site': '@remix_run',
